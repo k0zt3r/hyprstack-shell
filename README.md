@@ -1,3 +1,5 @@
+> **Kali Linux fork:** [installation notes and screenshots](INSTALL.kali.md). Includes Debian Lua discovery and Telegram context-menu placement fixes.
+
 [English](README.en.md)
 
 <p align="center">

@@ -69,3 +69,11 @@ Telegram Flatpak 7.3.3 crashed when opening a mini app on native Wayland in the 
 Telegram's X11 context menu can use the title `TelegramDesktop`. This fork removes unconditional centering from the auxiliary-window rule; the native handler still centers ordinary floating dialogs while skipping override-redirect menus.
 
 Keep local dependency versions pinned when rebuilding. Review upstream updates instead of blindly running the updater against an installation with local source changes.
+
+## Screenshots
+
+Tested Kali session with a blue/lime custom palette and Kali Glitch wallpaper. Wallpaper artwork is supplied by Kali Linux.
+
+![Desktop and visualizer](docs/media/kali/desktop.png)
+
+![Appearance settings](docs/media/kali/settings.png)
