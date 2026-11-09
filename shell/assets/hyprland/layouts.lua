@@ -2042,7 +2042,7 @@ hl.window_rule({ name = "hyprstack-telegram-pip", match = {
     suppress_event = "maximize", ["hyprbars:no_bar"] = no_titlebar })
 hl.window_rule({ name = "hyprstack-telegram-auxiliary", match = {
     class = telegram_classes, initial_title = "(?i)^(" .. table.concat(telegram_auxiliary_titles, "|") .. ")$"
-}, float = true, center = true, suppress_event = "maximize", ["hyprbars:no_bar"] = no_titlebar })
+}, float = true, suppress_event = "maximize", ["hyprbars:no_bar"] = no_titlebar })
 
 local function replace_binds(keys, action, description, options)
     if type(keys) == "table" then
