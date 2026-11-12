@@ -14,6 +14,7 @@
 !/CONFIGURATION.md
 !/MAINTENANCE.md
 !/update.sh
+!/sync-fork.sh
 !/THIRD_PARTY.md
 !/flake.nix
 !/flake.lock
@@ -29,6 +30,7 @@
 !/distribution/check_headers.py
 !/distribution/generate_emoji.py
 !/distribution/update.py
+!/distribution/sync_fork.py
 !/distribution/update_transaction.py
 !/distribution/defaults/
 !/distribution/systemd/
@@ -106,6 +108,7 @@
 
 !/docs/
 /docs/*
+!/docs/sync-fork.ru.md
 !/docs/media/
 /docs/media/*
 !/docs/media/README.md

@@ -17,6 +17,8 @@ MouseArea {
 
     property bool onClient
     property bool saving: false
+    property bool capturePending: false
+    property rect captureRegion: Qt.rect(0, 0, 0, 0)
 
     property real realBorderWidth: onClient ? (Hypr.options["general:border_size"] ?? 1) : 2
     property real realRounding: onClient ? (Hypr.options["decoration:rounding"] ?? 0) : 0
@@ -55,6 +57,8 @@ MouseArea {
     }
 
     function checkClientRects(x: real, y: real): void {
+        if (capturePending || saving || loader.closing)
+            return;
         for (const client of clients) {
             if (!client)
                 continue;
@@ -86,7 +90,7 @@ MouseArea {
         if (closeAnim.running || loader.closing || sw < 1 || sh < 1)
             return;
         closeAnim.start();
-        loader.completeRegion(screen.name, Qt.rect(Math.ceil(rsx), Math.ceil(rsy), Math.floor(sw), Math.floor(sh)));
+        loader.completeRegion(screen.name, captureRegion);
     }
 
     function save(): void {
@@ -94,7 +98,7 @@ MouseArea {
             return;
         saving = true;
         const tmpfile = Qt.resolvedUrl(`/tmp/hyprstack-picker-${Quickshell.processId}-${Date.now()}.png`);
-        CUtils.saveItem(screencopy, tmpfile, Qt.rect(Math.ceil(rsx), Math.ceil(rsy), Math.floor(sw), Math.floor(sh)), path => {
+        CUtils.saveItem(screencopy, tmpfile, captureRegion, path => {
             // Release exclusive input before another application is mapped.
             closeAnim.start();
             root.loader.completeCapture(path);
@@ -138,13 +142,30 @@ MouseArea {
     }
 
     onPressed: event => {
+        if (capturePending || saving || loader.closing)
+            return;
         ssx = event.x;
         ssy = event.y;
     }
 
-    onReleased: {
-        if (closeAnim.running || saving || loader.closing)
+    onReleased: event => {
+        if (closeAnim.running || capturePending || saving || loader.closing)
             return;
+
+        // A live screencopy arrives asynchronously. Freeze the raw selection
+        // now: hover events and presentation animations must not alter its crop.
+        if (!onClient) {
+            ex = event.x;
+            ey = event.y;
+        }
+        const left = Math.max(0, Math.ceil(Math.min(sx, ex)));
+        const top = Math.max(0, Math.ceil(Math.min(sy, ey)));
+        const right = Math.min(screen.width, Math.floor(Math.max(sx, ex)));
+        const bottom = Math.min(screen.height, Math.floor(Math.max(sy, ey)));
+        if (right <= left || bottom <= top)
+            return;
+        captureRegion = Qt.rect(left, top, right - left, bottom - top);
+        capturePending = true;
 
         if (root.loader.regionOnly) {
             reportRegion();
@@ -158,6 +179,8 @@ MouseArea {
     }
 
     onPositionChanged: event => {
+        if (capturePending || saving || loader.closing)
+            return;
         const x = event.x;
         const y = event.y;
 

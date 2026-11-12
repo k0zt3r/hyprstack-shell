@@ -5,6 +5,7 @@
 #include <linux/input-event-codes.h>
 #include <stdint.h>
 #include <stdlib.h>
+#include <unistd.h>
 #include <string.h>
 #include "virtual-pointer.h"
 
@@ -18,7 +19,12 @@ static void removed(void *data, struct wl_registry *registry, uint32_t name) {}
 static const struct wl_registry_listener listener = {global, removed};
 
 int main(int argc, char **argv) {
-    if (argc != 5) return 2;
+    const int drag = argc == 8 && !strcmp(argv[1], "drag");
+    if (argc != 5 && !drag) return 2;
+    const int x = atoi(argv[drag ? 2 : 1]);
+    const int y = atoi(argv[drag ? 3 : 2]);
+    const int width = atoi(argv[drag ? 6 : 3]);
+    const int height = atoi(argv[drag ? 7 : 4]);
     struct wl_display *display = wl_display_connect(NULL);
     if (!display) return 3;
     struct wl_registry *registry = wl_display_get_registry(display);
@@ -26,15 +32,28 @@ int main(int argc, char **argv) {
     wl_display_roundtrip(display);
     if (!manager) return 4;
     struct zwlr_virtual_pointer_v1 *pointer = zwlr_virtual_pointer_manager_v1_create_virtual_pointer(manager, NULL);
-    zwlr_virtual_pointer_v1_motion_absolute(pointer, 1, atoi(argv[1]), atoi(argv[2]), atoi(argv[3]), atoi(argv[4]));
+    zwlr_virtual_pointer_v1_motion_absolute(pointer, 1, x, y, width, height);
     zwlr_virtual_pointer_v1_frame(pointer);
     wl_display_roundtrip(display);
     zwlr_virtual_pointer_v1_button(pointer, 2, BTN_LEFT, WL_POINTER_BUTTON_STATE_PRESSED);
     zwlr_virtual_pointer_v1_frame(pointer);
     wl_display_roundtrip(display);
-    zwlr_virtual_pointer_v1_button(pointer, 3, BTN_LEFT, WL_POINTER_BUTTON_STATE_RELEASED);
+    if (drag) {
+        zwlr_virtual_pointer_v1_motion_absolute(pointer, 3, atoi(argv[4]), atoi(argv[5]), width, height);
+        zwlr_virtual_pointer_v1_frame(pointer);
+        wl_display_roundtrip(display);
+        usleep(30000);
+    }
+    zwlr_virtual_pointer_v1_button(pointer, 4, BTN_LEFT, WL_POINTER_BUTTON_STATE_RELEASED);
     zwlr_virtual_pointer_v1_frame(pointer);
     wl_display_roundtrip(display);
+    if (drag) {
+        // Move back over the application immediately after release. A pending
+        // live screencopy must keep the selected crop instead of resnapping.
+        zwlr_virtual_pointer_v1_motion_absolute(pointer, 5, width / 2, height / 2, width, height);
+        zwlr_virtual_pointer_v1_frame(pointer);
+        wl_display_roundtrip(display);
+    }
     zwlr_virtual_pointer_v1_destroy(pointer);
     zwlr_virtual_pointer_manager_v1_destroy(manager);
     wl_registry_destroy(registry);

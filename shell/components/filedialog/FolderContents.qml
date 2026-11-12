@@ -234,21 +234,23 @@ Item {
             }
         }
 
-        CachingIconImage {
+        Item {
             id: icon
 
             anchors.horizontalCenter: parent.horizontalCenter
             anchors.top: parent.top
             anchors.topMargin: Tokens.padding.medium
 
-            implicitSize: Sizes.itemWidth - Tokens.padding.medium * 2
+            implicitWidth: Sizes.itemWidth - Tokens.padding.medium * 2
+            implicitHeight: implicitWidth
 
-            Component.onCompleted: {
+            readonly property url iconSource: {
                 const file = item.modelData;
-                if (file.isImage)
-                    source = Qt.resolvedUrl(file.path);
-                else if (!file.isDir)
-                    source = Quickshell.iconPath(file.mimeType.replace("/", "-"), "application-x-zerosize");
+                if (!file) return "";
+                if (file.isImage) return Paths.fileUrl(file.path);
+                let names;
+                if (!file.isDir)
+                    names = [file.mimeType.replace("/", "-"), `${file.mimeType.split("/")[0]}-x-generic`, "text-x-generic"];
                 else {
                     // The desktop's own folders are known by their paths:
                     // their names are in the user's language, their icons
@@ -257,8 +259,33 @@ Item {
                         [Paths.downloads, "download"], [Paths.music, "music"],
                         [Paths.pictures, "pictures"], [Paths.videos, "videos"]]
                         .find(entry => entry[0] && entry[0] === file.path);
-                    source = Quickshell.iconPath(kind ? `folder-${kind[1]}` : "inode-directory", "inode-directory");
+                    names = [kind ? `folder-${kind[1]}` : "folder", "folder", "inode-directory"];
                 }
+                // The default missing-icon checkerboard reports Ready too.
+                // Check existence before asking the provider for a texture.
+                for (const name of names) {
+                    const path = Quickshell.iconPath(name, true);
+                    if (path) return path;
+                }
+                return "";
+            }
+
+            CachingIconImage {
+                id: image
+                objectName: "fileDialogImage"
+                anchors.fill: parent
+                source: icon.iconSource
+                visible: status === Image.Ready
+            }
+
+            MaterialIcon {
+                objectName: "fileDialogFallbackIcon"
+                anchors.centerIn: parent
+                visible: image.status !== Image.Ready
+                text: item.modelData?.isDir ? "folder" : "draft"
+                color: item.modelData?.isDir ? Colours.palette.m3primary : Colours.palette.m3onSurfaceVariant
+                fill: item.modelData?.isDir ? 1 : 0
+                fontStyle: Tokens.font.icon.builders.extraLarge.scale(2).build()
             }
         }
 

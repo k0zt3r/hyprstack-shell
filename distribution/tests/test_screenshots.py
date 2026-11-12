@@ -18,12 +18,12 @@ import time
 
 
 HERE = Path(__file__).resolve().parent
-SOURCE = HERE.parents[1] / "shell"
+SOURCE = Path(os.environ.get("HYPRSTACK_TEST_SOURCE", HERE.parents[1] / "shell"))
 
 
 def main():
     if "--private-bus" not in sys.argv:
-        subprocess.run(["dbus-run-session", "--", sys.executable, __file__, "--private-bus"], check=True)
+        subprocess.run(["dbus-run-session", "--", sys.executable, __file__, "--private-bus", *sys.argv[1:]], check=True)
         return
     prefix = Path(os.environ["HYPRSTACK_TEST_PREFIX"])
     pointer = os.environ["HYPRSTACK_TEST_POINTER"]
@@ -129,6 +129,27 @@ def main():
         wait(lambda: "Screenshot test underlay" in ctl("-j", "clients"), "shell startup")
         wait(lambda: status()["loaded"], "notification history")
         wait(lambda: "screenshotFreeze" in ctl("globalshortcuts"), "capture shortcut registration")
+
+        if "--region-only" in sys.argv:
+            from PIL import Image
+            for frozen in (False, True):
+                for x1, y1, x2, y2 in ((300, 200, 540, 340), (540, 340, 300, 200)):
+                    previous = {n["id"] for n in status()["notifications"]}
+                    if frozen:
+                        key("-M", "logo", "-M", "shift", "-k", "s", "-m", "shift", "-m", "logo")
+                    else:
+                        key("-M", "logo", "-M", "alt", "-M", "shift", "-k", "s", "-m", "shift", "-m", "alt", "-m", "logo")
+                    wait(lambda: has_layer("hyprstack-area-picker"), "crop picker")
+                    time.sleep(.4)
+                    run([pointer, "drag", *map(str, (x1, y1, x2, y2, 1280, 800))])
+                    notification = wait(lambda: next((n for n in status()["notifications"]
+                        if n["id"] not in previous), None), "cropped screenshot")
+                    wait(lambda: not has_layer("hyprstack-area-picker"), "crop picker dismissed")
+                    with Image.open(notification["path"]) as crop:
+                        assert crop.size == (240, 140), (frozen, crop.size)
+                        assert crop.convert("RGB").getextrema() == ((35, 35), (69, 69), (103, 103)), (frozen, crop.getextrema())
+            print("PASS: live/frozen forward/reverse drags retain exact crop after post-release motion", flush=True)
+            return
 
         # Use the real keybind, picker capture, clipboard helper and notification server.
         key("-M", "logo", "-M", "shift", "-k", "s", "-m", "shift", "-m", "logo")
