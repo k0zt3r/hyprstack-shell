@@ -125,7 +125,7 @@ StyledRect {
                         isToggle: false
                         onClicked: {
                             root.screenState.utilities = false;
-                            WindowFactory.create();
+                            WindowFactory.create(null, {screen: root.screenState.modelData});
                         }
                     }
                 }
@@ -159,7 +159,7 @@ StyledRect {
                         isToggle: VPN.status.state !== "needs-auth" && VPN.status.state !== "error"
                         inactiveOnColour: Colours.palette.m3onSurfaceVariant
                         onClicked: {
-                            if (VPN.active.name === "native" && ManagedVPN.profiles.length === 0)
+                            if (VPN.active.name === "native" && !VPN.connected && ManagedVPN.needsSetup)
                                 ManagedVPN.openSettings();
                             else
                                 VPN.toggle();

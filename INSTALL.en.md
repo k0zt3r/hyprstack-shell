@@ -5,10 +5,14 @@
 <a id="arch"></a>
 
 Arch Linux, CachyOS, EndeavourOS and Manjaro with systemd.
-Requires **Hyprland 0.57.0 or 0.57.1** with matching headers, **Quickshell ≥ 0.3.1**
+Requires **Hyprland 0.57.0–0.57.2** with matching headers, **Quickshell ≥ 0.3.1**
 with Hyprland/PAM/Polkit, and **Qt ≥ 6.9**. CMake checks the ABI during the build.
 
 After updating Hyprland, rebuild Hyprstack and log in to a new session.
+Default keyboard layouts: US/RU, switched with Alt+Shift.
+
+For an untested version, choose “Install anyway” in the Gist installer;
+for a manual build, add `-DHYPRSTACK_ALLOW_UNSUPPORTED_HYPRLAND=ON`.
 
 **Commands assume Bash** — run `bash` first if you use Fish/Zsh.
 For an existing installation, use the [update procedure](MAINTENANCE.md#обновление).
@@ -22,7 +26,7 @@ sudo pacman -Syu --needed base-devel git cmake ninja pkgconf gettext \
   pixman libdrm libinput systemd-libs wayland libxkbcommon pango cairo \
   python python-pillow fuzzel wl-clipboard cliphist grim slurp wf-recorder \
   libnotify brightnessctl networkmanager pipewire pipewire-audio \
-  pipewire-pulse wireplumber polkit libcap hyprlock hyprpicker xdg-utils \
+  pipewire-pulse wireplumber polkit udisks2 libcap hyprlock hyprpicker xdg-utils \
   xdg-user-dirs libxml2 adwaita-icon-theme dbus glib2 gsettings-desktop-schemas \
   xdg-desktop-portal-gtk xdg-desktop-portal-hyprland
 ```

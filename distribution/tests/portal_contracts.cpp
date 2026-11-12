@@ -1,20 +1,26 @@
 #include "nmsecretagent.hpp"
 #include "filechooserportal.hpp"
+#include "filevolumes.hpp"
+#include "filesystemmodel.hpp"
 #include <QCoreApplication>
 #include <QDBusConnection>
 #include <QDBusMessage>
 #include <QDBusPendingCallWatcher>
 #include <QDBusArgument>
+#include <QDBusContext>
+#include <QTimer>
 #include <QDir>
 #include <QElapsedTimer>
 #include <QFile>
 #include <QPointer>
+#include <QPersistentModelIndex>
 #include <QTemporaryDir>
 #include <QThread>
 #include <QUrl>
 #include <filesystem>
 #include <iostream>
 #include <stdexcept>
+#include <algorithm>
 
 using namespace hyprstack::services;
 using namespace hyprstack::portals;
@@ -84,6 +90,165 @@ public slots:
     }
 };
 
+class FakeDisks : public QObject {
+    Q_OBJECT
+    Q_CLASSINFO("D-Bus Interface", "org.freedesktop.DBus.ObjectManager")
+public:
+    VolumeObjects objects;
+public slots:
+    VolumeObjects GetManagedObjects() { return objects; }
+signals:
+    void InterfacesAdded(const QDBusObjectPath& path, const VolumeInterfaces& interfaces);
+};
+
+class FakeMount : public QObject, protected QDBusContext {
+    Q_OBJECT
+    Q_CLASSINFO("D-Bus Interface", "org.freedesktop.UDisks2.Filesystem")
+public:
+    QString path;
+    bool deny = false;
+    int calls = 0;
+public slots:
+    QString Mount(const QVariantMap& options) {
+        ++calls;
+        require(options.isEmpty(), "Mount forced filesystem options");
+        if (deny) {
+            sendErrorReply("org.freedesktop.UDisks2.Error.NotAuthorized", "Test: permission denied");
+            return {};
+        }
+        const auto call = message();
+        const auto bus = connection();
+        setDelayedReply(true);
+        QTimer::singleShot(100, this, [this, call, bus] {
+            bus.send(call.createReply(path));
+        });
+        return {};
+    }
+};
+
+static void checkVolumes() {
+    auto bus = QDBusConnection::connectToBus(qEnvironmentVariable("DBUS_SYSTEM_BUS_ADDRESS"), "fake-udisks");
+    FileVolumes volumes; // Registers the wire types used by the fake service too.
+    FakeDisks disks;
+    FakeMount mount;
+    QTemporaryDir directory;
+    require(directory.isValid(), "Cannot create mounted-volume fixture");
+    mount.path = directory.path();
+    const QString device = "/org/freedesktop/UDisks2/block_devices/data";
+    auto entry = [](const QString& name, const QList<QByteArray>& points, bool ignore = false) {
+        return VolumeInterfaces{
+            {"org.freedesktop.UDisks2.Block", {{"IdUsage", "filesystem"}, {"IdType", "ntfs"},
+                {"IdLabel", name}, {"PreferredDevice", QByteArray("/dev/test\0", 10)},
+                {"HintIgnore", ignore}, {"Drive", QVariant::fromValue(QDBusObjectPath("/"))}}},
+            {"org.freedesktop.UDisks2.Filesystem", {{"MountPoints", QVariant::fromValue(points)}}}};
+    };
+    disks.objects.insert(QDBusObjectPath(device), entry("Windows 11", {}));
+    disks.objects.insert(QDBusObjectPath(device + "_root"), entry("System", {QByteArray("/\0", 2)}));
+    auto efi = entry("EFI", {});
+    efi.insert("org.freedesktop.UDisks2.Partition", {{"Type", "c12a7328-f81f-11d2-ba4b-00a0c93ec93b"}});
+    disks.objects.insert(QDBusObjectPath(device + "_efi"), efi);
+    disks.objects.insert(QDBusObjectPath(device + "_ignored"), entry("Hidden", {}, true));
+    require(bus.registerService("org.freedesktop.UDisks2"), "Cannot own fake UDisks service");
+    require(bus.registerObject("/org/freedesktop/UDisks2", &disks,
+        QDBusConnection::ExportAllSlots | QDBusConnection::ExportAllSignals), "Cannot export volume list");
+    require(bus.registerObject(device, &mount, QDBusConnection::ExportAllSlots), "Cannot export fake Mount");
+    volumes.refresh();
+    auto hasName = [&](const QString& name) {
+        return std::ranges::any_of(volumes.volumes(), [&](const QVariant& v) {
+            return v.toMap().value("name").toString() == name;
+        });
+    };
+    until([&] { return hasName("Windows 11"); });
+    require(!hasName("System") && !hasName("EFI") && !hasName("Hidden"), "System or ignored volumes shown");
+    require(mount.calls == 0, "Listing mounted a disk");
+    std::cout << "PASS: listing excludes system/EFI/ignored partitions and never mounts\n" << std::flush;
+    QString opened, failure;
+    QObject::connect(&volumes, &FileVolumes::opened, &volumes, [&](const QString& path) { opened = path; });
+    QObject::connect(&volumes, &FileVolumes::failed, &volumes, [&](const QString& error) {
+        failure = error;
+    });
+    volumes.openVolume("invalid");
+    require(mount.calls == 0 && volumes.busyId().isEmpty(), "Invalid volume was opened");
+    volumes.openVolume(device);
+    volumes.openVolume(device);
+    require(volumes.busyId() == device, "Mount does not expose busy state");
+    until([&] { return opened == directory.path(); });
+    require(mount.calls == 1 && volumes.busyId().isEmpty(), "Duplicate mount or stuck busy state");
+    std::cout << "PASS: mount runs once asynchronously and opens its returned directory\n" << std::flush;
+    mount.deny = true;
+    volumes.openVolume(device);
+    until([&] { return !failure.isEmpty(); });
+    require(failure.contains("permission denied") && volumes.busyId().isEmpty(), "Mount failure lost or dialog stuck");
+    std::cout << "PASS: mount failure is reported and clears busy state\n" << std::flush;
+    const auto mounted = entry("USB files", {directory.path().toUtf8() + '\0'});
+    disks.objects.insert(QDBusObjectPath(device + "_usb"), mounted);
+    emit disks.InterfacesAdded(QDBusObjectPath(device + "_usb"), mounted);
+    until([&] { return hasName("USB files"); });
+    opened.clear();
+    volumes.openVolume(device + "_usb");
+    require(opened == directory.path() && mount.calls == 2, "Mounted volume remounted or path not decoded");
+    bus.unregisterObject(device);
+    bus.unregisterObject("/org/freedesktop/UDisks2");
+    bus.unregisterService("org.freedesktop.UDisks2");
+    std::cout << "PASS: disk discovery, system/EFI filtering, explicit asynchronous mount, failures and hotplug\n";
+}
+
+static void checkFileSorting() {
+    using namespace hyprstack::models;
+    QTemporaryDir directory;
+    require(directory.isValid(), "Cannot create sort fixture");
+    QDir dir(directory.path());
+    require(dir.mkdir("folderA") && dir.mkdir("folderB"), "Cannot create sort folders");
+    auto write = [&](const QString& name, int size, qint64 time) {
+        QFile file(dir.filePath(name));
+        require(file.open(QIODevice::WriteOnly), "Cannot write sort fixture");
+        require(file.write(QByteArray(size, 'x')) == size, "Cannot size sort fixture");
+        require(file.flush(), "Cannot flush sort fixture");
+        require(file.setFileTime(QDateTime::fromSecsSinceEpoch(1600000000 + time),
+            QFileDevice::FileModificationTime), "Cannot date sort fixture");
+    };
+    write("a.bin", 90, 300);
+    write("b.txt", 10, 100);
+    write("c.bin", 50, 200);
+    FileSystemModel model;
+    model.setWatchChanges(false);
+    model.setPath(directory.path());
+    until([&] { return model.rowCount() == 5; });
+    auto entry = [&](int row) { return model.data(model.index(row, 0), Qt::UserRole).value<FileSystemEntry*>(); };
+    auto files = [&] {
+        require(entry(0)->isDir() && entry(1)->isDir(), "Descending order moved folders below files");
+        QStringList result;
+        for (int row = 2; row < model.rowCount(); ++row) result.append(entry(row)->name());
+        return result;
+    };
+    require(files() == QStringList{"a.bin", "b.txt", "c.bin"}, "Name sort failed");
+    QPersistentModelIndex selected(model.index(3, 0));
+    auto* selectedFile = entry(3);
+    model.setSortBy(FileSystemModel::SortBy::Size);
+    require(files() == QStringList{"b.txt", "c.bin", "a.bin"}, "Size sort failed");
+    require(selected.row() == 2 && selected.data(Qt::UserRole).value<FileSystemEntry*>() == selectedFile,
+        "Sorting changed the selected file identity");
+    model.setSortBy(FileSystemModel::SortBy::Modified);
+    require(files() == QStringList{"b.txt", "c.bin", "a.bin"}, "Modified-date sort failed");
+    model.setSortReverse(true);
+    require(files() == QStringList{"a.bin", "c.bin", "b.txt"}, "Reverse modified-date sort failed");
+    model.setSortBy(FileSystemModel::SortBy::Type);
+    model.setSortReverse(false);
+    require(files() == QStringList{"a.bin", "c.bin", "b.txt"}, "Type sort failed");
+    model.setSortBy(FileSystemModel::SortBy::Size);
+    model.setSortReverse(true);
+    write("d.txt", 30, 50);
+    model.refresh();
+    until([&] { return model.rowCount() == 6; });
+    require(files() == QStringList{"a.bin", "c.bin", "d.txt", "b.txt"}, "New file inserted at the wrong sorted position");
+    write("b.txt", 120, 400);
+    model.refresh();
+    require(files() == QStringList{"b.txt", "a.bin", "c.bin", "d.txt"}, "Refresh left stale file sizes");
+    require(selected.row() == 2 && selectedFile->modified() == QDateTime::fromSecsSinceEpoch(1600000400),
+        "Refresh lost the persistent selection or modification time");
+    std::cout << "PASS: file sorting by name/date/size/type, reverse order, folders first, persistent selection and refreshed metadata\n";
+}
+
 int main(int argc, char** argv) {
     QCoreApplication app(argc, argv);
     try {
@@ -146,6 +311,8 @@ int main(int argc, char** argv) {
         require(pending.reply().type() != QDBusMessage::ErrorMessage && pending.reply().arguments().size() == 2
             && pending.reply().arguments().first().toUInt() != 0, "Request.Close did not withdraw the portal request");
         std::cout << "PASS: portal Request.Close completes the pending call\n";
+        checkVolumes();
+        checkFileSorting();
     } catch (const std::exception& error) {
         std::cerr << error.what() << '\n';
         return 1;

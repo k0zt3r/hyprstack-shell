@@ -1,0 +1,62 @@
+name: Publish release
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - '.github/workflows/release.yml'
+      - 'distribution/RELEASE.md'
+    tags:
+      - 'v*'
+
+permissions:
+  contents: read
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    env:
+      GH_TOKEN: ${{ github.token }}
+      GH_REPO: ${{ github.repository }}
+    steps:
+      - name: Validate version and publish the tagged source
+        shell: bash
+        run: |
+          set -euo pipefail
+          release_tag="$GITHUB_REF_NAME"
+          if [[ "$GITHUB_REF_TYPE" == branch ]]; then
+            gh api "repos/$GH_REPO/contents/CMakeLists.txt?ref=$GITHUB_SHA" --jq .content | base64 --decode > CMakeLists.txt
+            release_version=$(python3 -c 'from pathlib import Path; import re; print(re.search(r"project\(hyprstack VERSION (\d+\.\d+\.\d+)", Path("CMakeLists.txt").read_text())[1])')
+            release_tag="v$release_version"
+            # Finish publication when a first workflow and its tag were pushed
+            # together before GitHub had registered the new workflow.
+            if ! gh api "repos/$GH_REPO/git/ref/tags/$release_tag" >/dev/null 2>&1; then
+              echo "Push $release_tag to publish this version."
+              exit 0
+            fi
+          fi
+          [[ "$release_tag" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]
+          export RELEASE_TAG="$release_tag"
+          notes_ref="$release_tag"
+          if [[ "$GITHUB_REF_TYPE" == branch ]]; then
+            notes_ref="$GITHUB_SHA"
+          fi
+          gh api "repos/$GH_REPO/contents/CMakeLists.txt?ref=$release_tag" --jq .content | base64 --decode > CMakeLists.txt
+          gh api "repos/$GH_REPO/contents/distribution/RELEASE.md?ref=$notes_ref" --jq .content | base64 --decode > release-notes.md
+          gh api "repos/$GH_REPO/contents/docs/media/updates.png?ref=$notes_ref" --jq .content | base64 --decode > updates.png
+          python3 - <<'PY'
+          import os
+          from pathlib import Path
+          import re
+          version = re.search(r'project\(hyprstack VERSION (\d+\.\d+\.\d+)', Path('CMakeLists.txt').read_text())
+          assert version and 'v' + version[1] == os.environ['RELEASE_TAG'], 'Release tag and CMake version differ'
+          PY
+          if gh release view "$release_tag" >/dev/null 2>&1; then
+            gh release edit "$release_tag" --title "Hyprstack ${release_tag#v}" --notes-file release-notes.md --latest
+          else
+            gh release create "$release_tag" --verify-tag --title "Hyprstack ${release_tag#v}" --notes-file release-notes.md --latest
+          fi
+          gh release upload "$release_tag" updates.png --clobber

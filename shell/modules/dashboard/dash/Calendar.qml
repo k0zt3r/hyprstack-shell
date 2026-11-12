@@ -118,6 +118,7 @@ CustomMouseArea {
             Item {
                 Layout.fillWidth: true
                 Layout.fillHeight: true
+                Layout.minimumWidth: 0
 
                 implicitWidth: monthYearDisplay.implicitWidth + Tokens.padding.large * 2
                 implicitHeight: monthYearDisplay.implicitHeight + Tokens.padding.extraSmall * 2
@@ -147,6 +148,9 @@ CustomMouseArea {
                     }
 
                     anchors.centerIn: parent
+                    width: parent.width
+                    horizontalAlignment: Text.AlignHCenter
+                    elide: Text.ElideRight
                     text: new Date(root.currYear, root.currMonth, 1).toLocaleString(Tr.locale, "MMMM yyyy")
                     color: Colours.palette.m3primary
                     font: Tokens.font.title.builders.small.capitalisation(Font.Capitalize).build()

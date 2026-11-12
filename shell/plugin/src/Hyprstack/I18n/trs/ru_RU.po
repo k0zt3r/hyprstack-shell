@@ -6235,3 +6235,335 @@ msgstr "Введите одноразовый код."
 msgctxt "button"
 msgid "Next"
 msgstr "Далее"
+
+msgid "Folder path (Ctrl+L)"
+msgstr "Путь к папке (Ctrl+L)"
+
+msgid "File system"
+msgstr "Файловая система"
+
+msgid "Drives"
+msgstr "Диски"
+
+msgid "This path does not exist"
+msgstr "Такого пути не существует"
+
+msgid "This location is not accessible"
+msgstr "Нет доступа к этой папке"
+
+msgid "Choose a folder"
+msgstr "Выберите папку"
+
+msgid "This file does not match the selected filter"
+msgstr "Этот файл не соответствует выбранному фильтру"
+
+msgid "The requested folder is unavailable; showing Home"
+msgstr "Запрошенная папка недоступна, открыта домашняя папка"
+
+msgid "This folder is read-only"
+msgstr "В эту папку нельзя сохранять файлы"
+
+msgid "Could not open the drive: %1"
+msgstr "Не удалось открыть диск: %1"
+
+msgctxt "file column"
+msgid "Name"
+msgstr "Имя"
+
+msgid "Date modified"
+msgstr "Дата изменения"
+
+msgctxt "file column"
+msgid "Size"
+msgstr "Размер"
+
+msgctxt "file column"
+msgid "Type"
+msgstr "Тип"
+
+msgid "Icons"
+msgstr "Значки"
+
+msgid "List"
+msgstr "Список"
+
+msgid "Folder"
+msgstr "Папка"
+
+msgid "File"
+msgstr "Файл"
+
+#: services/Updates.qml
+msgid "Unable to read the updater response"
+msgstr "Не удалось прочитать ответ службы обновлений"
+
+#: services/Updates.qml
+msgid "Hyprstack update available"
+msgstr "Доступно обновление Hyprstack"
+
+#: services/Updates.qml
+#, qt-format
+msgid "Version %1 is available. Open Settings → Updates to install it."
+msgstr "Доступна версия %1. Для установки откройте Настройки → Обновления."
+
+#: services/Updates.qml
+msgid "The updater stopped unexpectedly"
+msgstr "Процесс обновления неожиданно завершился"
+
+#: modules/nexus/pages/UpdatesPage.qml
+msgid "Updates"
+msgstr "Обновления"
+
+#: modules/nexus/pages/UpdatesPage.qml
+msgid "Checking for updates…"
+msgstr "Проверка обновлений…"
+
+#: modules/nexus/pages/UpdatesPage.qml
+msgid "Downloading the release…"
+msgstr "Загрузка новой версии…"
+
+#: modules/nexus/pages/UpdatesPage.qml
+msgid "Building the update… This may take several minutes."
+msgstr "Сборка обновления… Это может занять несколько минут."
+
+#: modules/nexus/pages/UpdatesPage.qml
+msgid "Waiting for the session to end…"
+msgstr "Ожидание завершения сеанса…"
+
+#: modules/nexus/pages/UpdatesPage.qml
+msgid "Installing the update…"
+msgstr "Установка обновления…"
+
+#: modules/nexus/pages/UpdatesPage.qml
+msgid "Hyprstack was updated successfully"
+msgstr "Hyprstack успешно обновлён"
+
+#: modules/nexus/pages/UpdatesPage.qml
+msgid "Update failed"
+msgstr "Не удалось выполнить обновление"
+
+#: modules/nexus/pages/UpdatesPage.qml
+msgid "The update is ready to install"
+msgstr "Обновление готово к установке"
+
+#: modules/nexus/pages/UpdatesPage.qml
+msgid "A new version is available"
+msgstr "Доступна новая версия"
+
+#: modules/nexus/pages/UpdatesPage.qml
+msgid "No releases have been published yet"
+msgstr "Релизы пока не опубликованы"
+
+#: modules/nexus/pages/UpdatesPage.qml
+msgid "You are using the latest version"
+msgstr "Установлена актуальная версия"
+
+#: modules/nexus/pages/UpdatesPage.qml
+msgid "Check for a new Hyprstack release"
+msgstr "Проверьте наличие новой версии Hyprstack"
+
+#: modules/nexus/pages/UpdatesPage.qml
+msgid "Hyprstack version"
+msgstr "Версия Hyprstack"
+
+#: modules/nexus/pages/UpdatesPage.qml
+msgid "Installed version"
+msgstr "Установленная версия"
+
+#: modules/nexus/pages/UpdatesPage.qml
+msgid "Latest release"
+msgstr "Последний релиз"
+
+#: modules/nexus/pages/UpdatesPage.qml
+msgid "Last checked"
+msgstr "Последняя проверка"
+
+#: modules/nexus/pages/UpdatesPage.qml
+#, qt-format
+msgid "Unable to update Hyprstack: %1"
+msgstr "Не удалось обновить Hyprstack: %1"
+
+#: modules/nexus/pages/UpdatesPage.qml
+msgid "Check for updates"
+msgstr "Проверить обновления"
+
+#: modules/nexus/pages/UpdatesPage.qml
+msgid "Prepare the update again"
+msgstr "Подготовить обновление повторно"
+
+#: modules/nexus/pages/UpdatesPage.qml
+msgid "Download and prepare update"
+msgstr "Скачать и подготовить обновление"
+
+#: modules/nexus/pages/UpdatesPage.qml
+msgid "You can keep working while the release downloads and builds."
+msgstr "Во время загрузки и сборки можно продолжать работу."
+
+#: modules/nexus/pages/UpdatesPage.qml
+msgid "Install update…"
+msgstr "Установить обновление…"
+
+#: modules/nexus/pages/UpdatesPage.qml
+msgid "Save your work. Installation ends the Hyprland session."
+msgstr "Сохраните работу. Установка завершит сеанс Hyprland."
+
+#: modules/nexus/pages/UpdatesPage.qml
+msgid "On NixOS, update the hyprstack flake input and rebuild your NixOS or Home Manager configuration."
+msgstr "В NixOS обновите вход hyprstack во flake и пересоберите конфигурацию NixOS или Home Manager."
+
+#: modules/nexus/pages/UpdatesPage.qml
+msgid "Installation from Settings requires a systemd user session. Use update.sh from a TTY on this system."
+msgstr "Для установки из настроек нужен пользовательский systemd. В этой системе запустите update.sh из TTY."
+
+#: modules/nexus/pages/UpdatesPage.qml
+msgid "This installation is managed by your package manager or configuration. Update it there."
+msgstr "Эта установка управляется менеджером пакетов или конфигурацией. Обновите её через них."
+
+#: modules/nexus/pages/UpdatesPage.qml
+msgid "Open update log"
+msgstr "Открыть журнал обновления"
+
+#: modules/nexus/pages/UpdatesPage.qml
+msgid "Automatic checks"
+msgstr "Автоматическая проверка"
+
+#: modules/nexus/pages/UpdatesPage.qml
+msgid "Check for updates automatically"
+msgstr "Проверять обновления автоматически"
+
+#: modules/nexus/pages/UpdatesPage.qml
+msgid "Check stable releases at startup and every six hours."
+msgstr "Проверять стабильные релизы при запуске и каждые шесть часов."
+
+#: modules/nexus/pages/UpdatesPage.qml
+msgid "Notify about new releases"
+msgstr "Уведомлять о новых релизах"
+
+#: modules/nexus/pages/UpdatesPage.qml
+msgid "Show a small notification once for each new version."
+msgstr "Показывать небольшое уведомление один раз для каждой новой версии."
+
+#: modules/nexus/pages/UpdatesPage.qml
+msgid "Release notes"
+msgstr "Описание релиза"
+
+#: modules/nexus/pages/UpdatesPage.qml
+msgid "Open release on GitHub"
+msgstr "Открыть релиз на GitHub"
+
+#: modules/nexus/pages/UpdatesPage.qml
+msgid "Install update and log out?"
+msgstr "Установить обновление и выйти?"
+
+#: modules/nexus/pages/UpdatesPage.qml
+msgid "Save your work and close your applications. Hyprland will exit, then the prepared update will be installed with a backup. Wait for installation to finish before logging in again."
+msgstr "Сохраните работу и закройте приложения. Сеанс Hyprland завершится, затем подготовленное обновление будет установлено с резервной копией. Дождитесь окончания установки перед следующим входом."
+
+#: modules/nexus/pages/UpdatesPage.qml
+msgid "Install and log out"
+msgstr "Установить и выйти"
+
+#: modules/nexus/PageRegistry.qml
+msgid "Check for releases and update Hyprstack"
+msgstr "Проверка релизов и обновление Hyprstack"
+
+#: modules/vpn/VpnWindow.qml
+msgid "Please wait…"
+msgstr "Подождите…"
+
+#: modules/vpn/VpnWindow.qml
+msgid "Disconnect other VPN"
+msgstr "Отключить другой VPN"
+
+#: modules/vpn/VpnWindow.qml
+msgid "Add connection"
+msgstr "Добавить подключение"
+
+#: modules/vpn/VpnWindow.qml
+msgid "Select a server"
+msgstr "Выбрать сервер"
+
+#: modules/vpn/VpnWindow.qml
+msgid "Prepare VPN"
+msgstr "Подготовить VPN"
+
+#: modules/vpn/VpnWindow.qml
+msgid "Allow VPN"
+msgstr "Разрешить VPN"
+
+#: modules/vpn/VpnWindow.qml
+msgid "Adding connection…"
+msgstr "Добавление подключения…"
+
+#: modules/vpn/VpnWindow.qml
+msgid "Preparing VPN…"
+msgstr "Подготовка VPN…"
+
+#: modules/vpn/VpnWindow.qml
+msgid "Waiting for permission…"
+msgstr "Ожидание разрешения…"
+
+#: modules/vpn/VpnWindow.qml
+msgid "Testing latency…"
+msgstr "Проверка задержки…"
+
+#: modules/vpn/VpnWindow.qml
+msgid "Updating subscriptions…"
+msgstr "Обновление подписок…"
+
+#: modules/vpn/VpnWindow.qml
+msgid "Disconnected"
+msgstr "Отключено"
+
+#: modules/vpn/VpnWindow.qml
+#, qt-format
+msgid "%1 is connected. Disconnect it before using this VPN."
+msgstr "Подключён %1. Отключите его, чтобы использовать этот VPN."
+
+#: modules/vpn/VpnWindow.qml
+msgid "Add a server link or subscription to get started."
+msgstr "Для начала добавьте ссылку на сервер или подписку."
+
+#: modules/vpn/VpnWindow.qml
+msgid "Prepare the VPN components once, then connect."
+msgstr "Подготовьте компоненты VPN, затем подключитесь."
+
+#: modules/vpn/VpnWindow.qml
+msgid "Allow access to create a VPN tunnel. A system prompt will appear."
+msgstr "Разрешите создание VPN-туннеля в системном запросе."
+
+#: modules/vpn/VpnWindow.qml
+msgid "Choose a server, then press Connect."
+msgstr "Выберите сервер и нажмите «Подключить»."
+
+#: modules/vpn/VpnWindow.qml
+msgid "Servers"
+msgstr "Серверы"
+
+#: modules/vpn/VpnWindow.qml
+msgid "Choosing another server reconnects the VPN."
+msgstr "При выборе другого сервера VPN переподключится."
+
+#: modules/vpn/VpnWindow.qml
+msgid "Advanced"
+msgstr "Дополнительно"
+
+#: modules/vpn/VpnWindow.qml
+msgid "Disconnect to change connection settings."
+msgstr "Отключитесь, чтобы изменить настройки подключения."
+
+#: modules/vpn/VpnWindow.qml
+msgid "Paste"
+msgstr "Вставить"
+
+#: modules/bar/components/VpnToggle.qml
+msgid "Open VPN controls"
+msgstr "Открыть управление VPN"
+
+#: modules/nexus/pages/NetworkPage.qml
+msgid "Choose a server or add a connection"
+msgstr "Выбрать сервер или добавить подключение"
+
+#: modules/nexus/pages/NetworkPage.qml
+msgid "External VPN provider"
+msgstr "Внешний VPN-клиент"

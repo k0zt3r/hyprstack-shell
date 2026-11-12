@@ -20,7 +20,9 @@ static const struct wl_registry_listener listener = {global, removed};
 
 int main(int argc, char **argv) {
     const int drag = argc == 8 && !strcmp(argv[1], "drag");
-    if (argc != 5 && !drag) return 2;
+    const int wheel = argc == 6;
+    if (argc != 5 && !wheel && !drag) return 2;
+    if (wheel && strcmp(argv[5], "up") && strcmp(argv[5], "down")) return 2;
     const int x = atoi(argv[drag ? 2 : 1]);
     const int y = atoi(argv[drag ? 3 : 2]);
     const int width = atoi(argv[drag ? 6 : 3]);
@@ -35,16 +37,23 @@ int main(int argc, char **argv) {
     zwlr_virtual_pointer_v1_motion_absolute(pointer, 1, x, y, width, height);
     zwlr_virtual_pointer_v1_frame(pointer);
     wl_display_roundtrip(display);
-    zwlr_virtual_pointer_v1_button(pointer, 2, BTN_LEFT, WL_POINTER_BUTTON_STATE_PRESSED);
-    zwlr_virtual_pointer_v1_frame(pointer);
-    wl_display_roundtrip(display);
-    if (drag) {
-        zwlr_virtual_pointer_v1_motion_absolute(pointer, 3, atoi(argv[4]), atoi(argv[5]), width, height);
+    if (wheel) {
+        const int direction = !strcmp(argv[5], "up") ? -1 : 1;
+        zwlr_virtual_pointer_v1_axis_source(pointer, WL_POINTER_AXIS_SOURCE_WHEEL);
+        zwlr_virtual_pointer_v1_axis_discrete(pointer, 2, WL_POINTER_AXIS_VERTICAL_SCROLL,
+                                            wl_fixed_from_int(direction * 15), direction);
+    } else {
+        zwlr_virtual_pointer_v1_button(pointer, 2, BTN_LEFT, WL_POINTER_BUTTON_STATE_PRESSED);
         zwlr_virtual_pointer_v1_frame(pointer);
         wl_display_roundtrip(display);
-        usleep(30000);
+        if (drag) {
+            zwlr_virtual_pointer_v1_motion_absolute(pointer, 3, atoi(argv[4]), atoi(argv[5]), width, height);
+            zwlr_virtual_pointer_v1_frame(pointer);
+            wl_display_roundtrip(display);
+            usleep(30000);
+        }
+        zwlr_virtual_pointer_v1_button(pointer, 4, BTN_LEFT, WL_POINTER_BUTTON_STATE_RELEASED);
     }
-    zwlr_virtual_pointer_v1_button(pointer, 4, BTN_LEFT, WL_POINTER_BUTTON_STATE_RELEASED);
     zwlr_virtual_pointer_v1_frame(pointer);
     wl_display_roundtrip(display);
     if (drag) {

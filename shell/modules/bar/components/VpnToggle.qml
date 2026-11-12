@@ -11,7 +11,7 @@ Item {
     readonly property bool connected: VPN.connected && VPN.status.state !== "error" && VPN.status.state !== "needs-auth"
     readonly property bool busy: VPN.connecting || VPN.disconnecting || (VPN.active.name === "native" && ManagedVPN.busy)
     readonly property string statusText: busy ? Tr.tr("Updating connection…") : connected ? Tr.tr("VPN connected") : Tr.tr("VPN disconnected")
-    readonly property color foreground: connected ? Colours.palette.m3primary : Colours.palette.m3onSurfaceVariant
+    readonly property color foreground: connected ? Colours.palette.m3primary : Colours.palette.m3secondary
 
     implicitWidth: icon.implicitHeight + Tokens.padding.small
     implicitHeight: icon.implicitHeight
@@ -24,11 +24,7 @@ Item {
     Accessible.onToggleAction: root.toggle()
 
     function toggle(): void {
-        if (busy)
-            return;
-        if (VPN.active.name === "native" && ManagedVPN.profiles.length === 0)
-            ManagedVPN.openSettings();
-        else
+        if (!busy)
             VPN.toggle();
     }
 
@@ -58,6 +54,6 @@ Item {
     }
 
     ToolTip.visible: hitArea.containsMouse || root.activeFocus
-    ToolTip.text: root.statusText
+    ToolTip.text: root.statusText + "\n" + (root.busy ? Tr.tr("Please wait…") : root.connected ? Tr.tr("Disconnect") : Tr.tr("Connect"))
     ToolTip.delay: 400
 }

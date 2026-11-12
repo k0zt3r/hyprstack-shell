@@ -5051,3 +5051,338 @@ msgstr ""
 msgctxt "button"
 msgid "Next"
 msgstr ""
+
+#: services/Updates.qml
+msgid "Unable to read the updater response"
+msgstr ""
+
+#: services/Updates.qml
+msgid "Hyprstack update available"
+msgstr ""
+
+#: services/Updates.qml
+#, qt-format
+msgid "Version %1 is available. Open Settings → Updates to install it."
+msgstr ""
+
+#: services/Updates.qml
+msgid "The updater stopped unexpectedly"
+msgstr ""
+
+#: modules/nexus/pages/UpdatesPage.qml
+msgid "Updates"
+msgstr ""
+
+#: modules/nexus/pages/UpdatesPage.qml
+msgid "Checking for updates…"
+msgstr ""
+
+#: modules/nexus/pages/UpdatesPage.qml
+msgid "Downloading the release…"
+msgstr ""
+
+#: modules/nexus/pages/UpdatesPage.qml
+msgid "Building the update… This may take several minutes."
+msgstr ""
+
+#: modules/nexus/pages/UpdatesPage.qml
+msgid "Waiting for the session to end…"
+msgstr ""
+
+#: modules/nexus/pages/UpdatesPage.qml
+msgid "Installing the update…"
+msgstr ""
+
+#: modules/nexus/pages/UpdatesPage.qml
+msgid "Hyprstack was updated successfully"
+msgstr ""
+
+#: modules/nexus/pages/UpdatesPage.qml
+msgid "Update failed"
+msgstr ""
+
+#: modules/nexus/pages/UpdatesPage.qml
+msgid "The update is ready to install"
+msgstr ""
+
+#: modules/nexus/pages/UpdatesPage.qml
+msgid "A new version is available"
+msgstr ""
+
+#: modules/nexus/pages/UpdatesPage.qml
+msgid "No releases have been published yet"
+msgstr ""
+
+#: modules/nexus/pages/UpdatesPage.qml
+msgid "You are using the latest version"
+msgstr ""
+
+#: modules/nexus/pages/UpdatesPage.qml
+msgid "Check for a new Hyprstack release"
+msgstr ""
+
+#: modules/nexus/pages/UpdatesPage.qml
+msgid "Hyprstack version"
+msgstr ""
+
+#: modules/nexus/pages/UpdatesPage.qml
+msgid "Installed version"
+msgstr ""
+
+#: modules/nexus/pages/UpdatesPage.qml
+msgid "Latest release"
+msgstr ""
+
+#: modules/nexus/pages/UpdatesPage.qml
+msgid "Last checked"
+msgstr ""
+
+#: modules/nexus/pages/UpdatesPage.qml
+#, qt-format
+msgid "Unable to update Hyprstack: %1"
+msgstr ""
+
+#: modules/nexus/pages/UpdatesPage.qml
+msgid "Check for updates"
+msgstr ""
+
+#: modules/nexus/pages/UpdatesPage.qml
+msgid "Prepare the update again"
+msgstr ""
+
+#: modules/nexus/pages/UpdatesPage.qml
+msgid "Download and prepare update"
+msgstr ""
+
+#: modules/nexus/pages/UpdatesPage.qml
+msgid "You can keep working while the release downloads and builds."
+msgstr ""
+
+#: modules/nexus/pages/UpdatesPage.qml
+msgid "Install update…"
+msgstr ""
+
+#: modules/nexus/pages/UpdatesPage.qml
+msgid "Save your work. Installation ends the Hyprland session."
+msgstr ""
+
+#: modules/nexus/pages/UpdatesPage.qml
+msgid "On NixOS, update the hyprstack flake input and rebuild your NixOS or Home Manager configuration."
+msgstr ""
+
+#: modules/nexus/pages/UpdatesPage.qml
+msgid "Installation from Settings requires a systemd user session. Use update.sh from a TTY on this system."
+msgstr ""
+
+#: modules/nexus/pages/UpdatesPage.qml
+msgid "This installation is managed by your package manager or configuration. Update it there."
+msgstr ""
+
+#: modules/nexus/pages/UpdatesPage.qml
+msgid "Open update log"
+msgstr ""
+
+#: modules/nexus/pages/UpdatesPage.qml
+msgid "Automatic checks"
+msgstr ""
+
+#: modules/nexus/pages/UpdatesPage.qml
+msgid "Check for updates automatically"
+msgstr ""
+
+#: modules/nexus/pages/UpdatesPage.qml
+msgid "Check stable releases at startup and every six hours."
+msgstr ""
+
+#: modules/nexus/pages/UpdatesPage.qml
+msgid "Notify about new releases"
+msgstr ""
+
+#: modules/nexus/pages/UpdatesPage.qml
+msgid "Show a small notification once for each new version."
+msgstr ""
+
+#: modules/nexus/pages/UpdatesPage.qml
+msgid "Release notes"
+msgstr ""
+
+#: modules/nexus/pages/UpdatesPage.qml
+msgid "Open release on GitHub"
+msgstr ""
+
+#: modules/nexus/pages/UpdatesPage.qml
+msgid "Install update and log out?"
+msgstr ""
+
+#: modules/nexus/pages/UpdatesPage.qml
+msgid "Save your work and close your applications. Hyprland will exit, then the prepared update will be installed with a backup. Wait for installation to finish before logging in again."
+msgstr ""
+
+#: modules/nexus/pages/UpdatesPage.qml
+msgid "Install and log out"
+msgstr ""
+
+#: modules/nexus/PageRegistry.qml
+msgid "Check for releases and update Hyprstack"
+msgstr ""
+
+#: modules/vpn/VpnWindow.qml
+msgid "Please wait…"
+msgstr ""
+
+#: modules/vpn/VpnWindow.qml
+msgid "Disconnect other VPN"
+msgstr ""
+
+#: modules/vpn/VpnWindow.qml
+msgid "Add connection"
+msgstr ""
+
+#: modules/vpn/VpnWindow.qml
+msgid "Select a server"
+msgstr ""
+
+#: modules/vpn/VpnWindow.qml
+msgid "Prepare VPN"
+msgstr ""
+
+#: modules/vpn/VpnWindow.qml
+msgid "Allow VPN"
+msgstr ""
+
+#: modules/vpn/VpnWindow.qml
+msgid "Adding connection…"
+msgstr ""
+
+#: modules/vpn/VpnWindow.qml
+msgid "Preparing VPN…"
+msgstr ""
+
+#: modules/vpn/VpnWindow.qml
+msgid "Waiting for permission…"
+msgstr ""
+
+#: modules/vpn/VpnWindow.qml
+msgid "Testing latency…"
+msgstr ""
+
+#: modules/vpn/VpnWindow.qml
+msgid "Updating subscriptions…"
+msgstr ""
+
+#: modules/vpn/VpnWindow.qml
+msgid "Updating connection…"
+msgstr ""
+
+#: modules/vpn/VpnWindow.qml
+msgid "Disconnected"
+msgstr ""
+
+#: modules/vpn/VpnWindow.qml
+#, qt-format
+msgid "%1 is connected. Disconnect it before using this VPN."
+msgstr ""
+
+#: modules/vpn/VpnWindow.qml
+msgid "Local proxy · selected applications"
+msgstr ""
+
+#: modules/vpn/VpnWindow.qml
+msgid "VPN · all applications"
+msgstr ""
+
+#: modules/vpn/VpnWindow.qml
+msgid "Add a server link or subscription to get started."
+msgstr ""
+
+#: modules/vpn/VpnWindow.qml
+msgid "Prepare the VPN components once, then connect."
+msgstr ""
+
+#: modules/vpn/VpnWindow.qml
+msgid "Allow access to create a VPN tunnel. A system prompt will appear."
+msgstr ""
+
+#: modules/vpn/VpnWindow.qml
+msgid "Choose a server, then press Connect."
+msgstr ""
+
+#: modules/vpn/VpnWindow.qml
+msgid "Close window"
+msgstr ""
+
+#: modules/vpn/VpnWindow.qml
+msgid "Servers"
+msgstr ""
+
+#: modules/vpn/VpnWindow.qml
+msgid "Choosing another server reconnects the VPN."
+msgstr ""
+
+#: modules/vpn/VpnWindow.qml
+msgid "Test latency"
+msgstr ""
+
+#: modules/vpn/VpnWindow.qml
+msgid "Delete profile"
+msgstr ""
+
+#: modules/vpn/VpnWindow.qml
+msgid "Advanced"
+msgstr ""
+
+#: modules/vpn/VpnWindow.qml
+msgid "Disconnect to change connection settings."
+msgstr ""
+
+#: modules/vpn/VpnWindow.qml
+msgid "Connection mode"
+msgstr ""
+
+#: modules/vpn/VpnWindow.qml
+msgid "SOCKS5: 127.0.0.1:2080 · HTTP: 127.0.0.1:2081"
+msgstr ""
+
+#: modules/vpn/VpnWindow.qml
+msgid "Routing profile"
+msgstr ""
+
+#: modules/vpn/VpnWindow.qml
+msgid "Reconnect after login"
+msgstr ""
+
+#: modules/vpn/VpnWindow.qml
+msgid "Update subscriptions"
+msgstr ""
+
+#: modules/vpn/VpnWindow.qml
+msgid "Profile links or configuration"
+msgstr ""
+
+#: modules/vpn/VpnWindow.qml
+msgid "Subscription URL"
+msgstr ""
+
+#: modules/vpn/VpnWindow.qml
+msgid "Subscription name"
+msgstr ""
+
+#: modules/vpn/VpnWindow.qml
+msgid "Paste"
+msgstr ""
+
+#: modules/vpn/VpnWindow.qml
+msgid "Delete profile?"
+msgstr ""
+
+#: modules/bar/components/VpnToggle.qml
+msgid "Open VPN controls"
+msgstr ""
+
+#: modules/nexus/pages/NetworkPage.qml
+msgid "Choose a server or add a connection"
+msgstr ""
+
+#: modules/nexus/pages/NetworkPage.qml
+msgid "External VPN provider"
+msgstr ""
